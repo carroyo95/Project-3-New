@@ -1,0 +1,306 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+ <title>Shape Creator</title>
+ <header>
+ <meta charset="utf-8">
+<style>
+canvas {
+	padding-left: 0;
+	padding-right: 0;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+ border: 1px solid black;;
+}
+</style>
+
+<script>
+var canvas;
+var context;
+var speed = 30;
+var timer;
+var counter = 50;
+var counter2 = 10;
+var delay = 20;
+var shapes = [];
+var differentShapes = ['circle', 'square', 'triangle', 'star', 'cloud'];
+
+function makeShape(value){
+	var x = Math.random() * canvas.width;
+	var y = Math.random() * canvas.height;
+	differentColors = ["blue", "red", "orange", "green", "magenta"];
+	var color = differentColors[Math.floor(Math.random() * differentColors.length)];
+	if (value == 0)
+	{
+		shapes.push(new shapeProperties(x, y, color, 0));
+	}
+	if (value == 1)
+	{
+		shapes.push(new shapeProperties(x, y, color, 1));
+	}
+	if (value == 2)
+	{
+		shapes.push(new shapeProperties(x, y, color, 2));
+	}
+	if (value == 3)
+	{
+		shapes.push(new shapeProperties(x, y, color, 3));
+	}
+	if (value == 4)
+	{
+		shapes.push(new shapeProperties(x, y, color, 4));
+	}	
+	if (value == 5)
+	{
+		shapes.push(new shapeProperties(x, y, color, 5));
+	}
+}
+
+
+function degreesToRadians(degrees) {
+	 return (degrees * Math.PI)/180;
+ }
+
+function shapeProperties(x, y, color, value)
+{
+	this.x = x;
+	this.y = y;
+	this.size = Math.random()*30+5;
+	this.vx = Math.random()*5;
+	this.vy = Math.random()*5;
+	this.color = color;
+	if (value == 0)
+	{
+		this.shape = differentShapes[Math.floor(Math.random() * 5)];
+	}
+	if (value == 1)
+	{
+		this.shape = differentShapes[0];
+	}
+	if (value == 2)
+	{
+		this.shape = differentShapes[1];
+	}
+	if (value == 3)
+	{
+		this.shape = differentShapes[2];
+	}
+	if (value == 4)
+	{
+		this.shape == differentShapes[3];
+	}
+	if (value == 5)
+	{
+		this.shape == differentShapes[4];
+	}
+
+}
+
+function circle(circle){
+	this.radius = 30;
+	context.beginPath();
+	context.arc(circle.x, circle.y, circle.size, 0, degreesToRadians(360), true);
+	context.fillStyle = circle.color;
+	context.fill();
+	circle.x += circle.vx;
+	circle.y += circle.vy;
+	if(circle.x < -50) circle.x = canvas.width+50;
+	if(circle.y < -50) circle.y = canvas.height+50;
+	if(circle.x > canvas.width+50) circle.x = -50;
+	if(circle.y > canvas.height+50) circle.y = -50;
+}
+function square(square){
+	context.beginPath();
+	context.rect(square.x, square.y, 100, 100);
+	context.fillStyle = square.color;
+	context.fill();
+	context.strokeStyle='black';
+	context.stroke();
+	square.x += square.vx;
+	square.y += square.vy;
+	if(square.x < -50) square.x = canvas.width+50;
+	if(square.y < -50) square.y = canvas.height+50;
+	if(square.x > canvas.width+50) square.x = -50;
+	if(square.y > canvas.height+50) square.y = -50;
+}
+function triangle(triangle){
+	var height = 100 * (Math.sqrt(3)/2);
+	context.beginPath();
+	context.moveTo(triangle.x, triangle.y);
+	context.lineTo(triangle.x+50, triangle.y+height);
+	context.lineTo(triangle.x-50, triangle.y+height);
+	context.lineTo(triangle.x, triangle.y);
+	context.fillStyle = triangle.color;
+	context.fill();
+	triangle.x += triangle.vx;
+	triangle.y += triangle.vy;
+	if(triangle.x < -50) triangle.x = canvas.width+50;
+	if(triangle.y < -50) triangle.y = canvas.height+50;
+	if(triangle.x > canvas.width+50) triangle.x = -50;
+	if(triangle.y > canvas.height+50) triangle.y = -50;
+
+}
+function star(star){
+	context.beginPath();
+	var alpha = (2 * Math.PI) / 10; 
+	var starXY = [star.x,star.y];
+	for(var i=0; i<11; i++)
+	{
+		var r = star.size*((i%2+1)/2);
+		var theta = alpha*i;
+		context.lineTo((r*Math.sin(theta)+starXY[0]), (r*Math.cos(theta))+starXY[1]);
+	}
+	context.closePath();
+	context.fillStyle = star.color;
+	context.fill();		
+	star.x += star.vx;
+	star.y += star.vy;
+	if(star.x < -50) star.x = canvas.width+50;
+	if(star.y < -50) star.y = canvas.height+50;
+	if(star.x > canvas.width+50) star.x = -50;
+	if(star.y > canvas.height+50) star.y = -50;
+}
+function cloud(cloud){
+	context.beginPath();
+	context.moveTo(cloud.x,cloud.y);
+    context.bezierCurveTo(cloud.x-75,cloud.y+37,cloud.x-70,cloud.y+25,cloud.x+50,cloud.y+25);
+    context.bezierCurveTo(cloud.x+20,cloud.y+25,cloud.x+20,cloud.y+62.5,cloud.x+20,cloud.y+62.5);
+    context.bezierCurveTo(cloud.x+20,cloud.y+80,cloud.x+40,cloud.y+102,cloud.x+75,cloud.y+120);
+    context.bezierCurveTo(cloud.x+110,cloud.y-102,cloud.x+130,cloud.y+80,cloud.x+130,cloud.y-62.5);
+    context.bezierCurveTo(cloud.x+130,cloud.y-62.5,cloud.x+130,cloud.y-25,cloud.x+100,cloud.y-25);
+    context.bezierCurveTo(cloud.x+85,cloud.y-25,cloud.x-75,cloud.y-37,cloud.x,cloud.y);
+    context.closePath();
+   	context.fillStyle = cloud.color;
+   	context.fill();
+    cloud.x += cloud.vx;
+    cloud.y += cloud.vy;
+    if(cloud.x < -50) cloud.x = canvas.width+50;
+	if(cloud.y < -50) cloud.y = canvas.height+50;
+	if(cloud.x > canvas.width+50) cloud.x = -50;
+	if(cloud.y > canvas.height+50) cloud.y = -50;
+
+}
+function text(){
+	context.fillStyle = 'blue';
+	context.font = 'italic bold 20px arial, serif';
+	context.textAlign = 'center';
+	counter = 0;
+	counter2 = canvas.width + 50;
+	fadein();
+}
+function fadein(){
+	counter++;
+	context.clearRect(0, 0, context.width, context.height);
+	context.save();
+	context.translate(counter, canvas.height/2);
+	context.fillText("Carmella Arroyo", 0, 0);
+	context.restore();
+	if (counter == counter2)
+	{
+		counter = 0;
+	}
+	if (counter < counter2)
+	{
+		var timeout = setTimeout('fadein()', delay);
+	}
+}
+
+
+function moveShapes() {
+	 context.globalCompositeOperation = "source-over";
+	 context.fillStyle = "black";
+	 context.fillRect(0, 0, canvas.width, canvas.height);
+	 context.globalCompositeOperation = "lighter";
+	 for(var i = 0; i < shapes.length; i++)
+	 {
+	 	if (shapes[i].shape == 'circle')
+	 	{
+	 		circle(shapes[i]);
+	 	}
+	 	else if (shapes[i].shape == 'square')
+	 	{
+	 		square(shapes[i]);
+	 	}
+	 	else if (shapes[i].shape == 'triangle')
+	 	{
+	 		triangle(shapes[i]);
+	 	}
+	 	else if (shapes[i].shape == 'star')
+	 	{
+	 		star(shapes[i]);
+	 	}
+	 	else if (shapes[i].shape == 'cloud')
+	 	{
+	 		cloud(shapes[i]);
+	 	}
+		
+	 }
+ }
+
+document.onkeydown = checkPress;
+function checkPress(press)
+{
+	press = press || window.event;
+
+	if (press.keyCode == '38')
+	{
+		makeShape(0);
+
+	}
+	if (press.keyCode == '39')
+	{
+		speed = speed - 5;
+		clearInterval(timer);
+		timer = setInterval(moveShapes, speed);
+	}
+	if (press.keyCode == '37')
+	{
+		speed = speed + 5
+		clearInterval(timer);
+		timer = setInterval(moveShapes, speed);
+	}
+	if (press.keyCode == "65")
+	{
+		makeShape(1);
+	}
+	if (press.keyCode == "83")
+	{
+		makeShape(2);
+	}
+	if (press.keyCode == "68")
+	{
+		makeShape(3);
+	}
+	if (press.keyCode == "70")
+	{
+		makeShape(4);
+	}
+	if (press.keyCode == "71")
+	{
+		makeShape(5);
+	}
+}
+window.onload = function(){
+	canvas = document.getElementById('canvas');
+	context = canvas.getContext('2d');
+	//text();
+	timer = setInterval(moveShapes, speed);
+}
+</script>
+</head>
+<body background="http://phosproject.com/wp-content/themes/phos_theme/images/7.jpg">
+	<canvas id="canvas" width="900" height="600"></canvas>
+<div style = "text-align: center">
+	<button type= "button" id= "startButton" value="Start Animation" onclick="makeShape(0)" align="center">Start!</button>
+</div>
+<div style = "text-align: center">
+	<p style ="color: white;">Click Start to add the first shape!</p>
+	<p style = "color: white;">Use the Up Arrow Key to randomly add new shapes!</p>
+	<p style = "color: white;"> Use the Left and Right Arrow Keys to speed up and slow down the shapes!</p>
+	<p style = "color: white;"> The letters A, S, and D add specific shapes!</p>
+</div>
+
+</body>
+</html>
